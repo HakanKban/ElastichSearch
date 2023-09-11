@@ -11,7 +11,6 @@ namespace ElastichSearch.API.Repository
             _client = client;
         }
 
-
         public async Task<Product?> SaveAsync(Product product)
         {
             product.Created = DateTime.Now;
