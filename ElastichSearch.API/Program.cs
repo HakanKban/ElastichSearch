@@ -1,4 +1,6 @@
 using ElastichSearch.API.Extensions;
+using ElastichSearch.API.Repository;
+using ElastichSearch.API.Services;
 using Elasticsearch.Net;
 using Nest;
 
@@ -10,9 +12,13 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddElasctic(builder.Configuration);
+builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<ProductRepository>();
+
 var app = builder.Build();
 
-builder.Services.AddElasctic(builder.Configuration);
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
