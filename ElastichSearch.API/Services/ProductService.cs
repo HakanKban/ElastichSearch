@@ -1,17 +1,20 @@
 ﻿using ElastichSearch.API.DTOs;
 using ElastichSearch.API.Models;
 using ElastichSearch.API.Repository;
+using Nest;
 using System.Collections.Immutable;
 using System.Net;
 
 namespace ElastichSearch.API.Services;
 public class ProductService
 {
-    private ProductRepository _repository;
+    private readonly ProductRepository _repository;
+    private  readonly ILogger<ProductService> _logger;
 
-    public ProductService(ProductRepository repository)
+    public ProductService(ProductRepository repository, ILogger<ProductService> logger)
     {
         _repository = repository;
+        _logger = logger;
     }
 
     public async Task<ResponseDto<ProductDto>> SaveAsync(ProductCreateDto request)
@@ -71,11 +74,21 @@ public class ProductService
 
     public async Task<ResponseDto<bool>> DeleteAsync(string id)
     {
+        
         var res = await _repository.DeleteAsync(id);
-        if (res == false)
+
+        if (res.IsValid == false && res.Result == Result.NotFound )
         {
+
+            return ResponseDto<bool>.Fail(new List<string>() { "Ürün bulunamadı" }, HttpStatusCode.NotFound);
+        }
+
+        if (res.IsValid == false)
+        {
+            _logger.LogError(res.OriginalException, res.ServerError.Error.ToString());
             return ResponseDto<bool>.Fail(new List<string>() { "Silinemedi" }, HttpStatusCode.InternalServerError);
         }
+
         return ResponseDto<bool>.Success(true, HttpStatusCode.NoContent);
     }
 }
