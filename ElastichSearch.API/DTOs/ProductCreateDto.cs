@@ -1,4 +1,5 @@
 ﻿using ElastichSearch.API.Models;
+using System.Drawing;
 
 namespace ElastichSearch.API.DTOs
 {
@@ -15,7 +16,7 @@ namespace ElastichSearch.API.DTOs
                 {
                     Width = Feature.Width,
                     Height = Feature.Height,
-                    Color = Feature.Color,
+                    Color = (EColor)int.Parse(Feature.Color),
                 }
             };
         }

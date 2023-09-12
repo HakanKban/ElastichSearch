@@ -2,6 +2,7 @@
 using ElastichSearch.API.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Nest;
 
 namespace ElastichSearch.API.Controllers
 {
@@ -24,6 +25,22 @@ namespace ElastichSearch.API.Controllers
         public async Task<IActionResult> GetAll()
         {
             return CreateActionResult(await _productService.GetAllAsync());
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(string id)
+        {
+            return CreateActionResult(await _productService.GetByIdAsync(id));
+        }
+        [HttpPut]
+        public async Task<IActionResult> UpdateProduct(ProductUpdateDto productUpdateDto)
+        {
+            return CreateActionResult(await _productService.UpdateAsync(productUpdateDto));
+        }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAsync(string id )
+        {
+            return CreateActionResult(await _productService.DeleteAsync(id));
         }
     }
 }

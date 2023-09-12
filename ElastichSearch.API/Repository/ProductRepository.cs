@@ -1,4 +1,5 @@
-﻿using ElastichSearch.API.Models;
+﻿using ElastichSearch.API.DTOs;
+using ElastichSearch.API.Models;
 using Nest;
 using System.Collections.Immutable;
 
@@ -32,5 +33,28 @@ namespace ElastichSearch.API.Repository
             foreach (var hit in result.Hits) hit.Source.Id = hit.Id;
             return result.Documents.ToImmutableList();
         }
+        public async Task<Product?> GetByIdAsync(string id)
+        {
+            var result = await _client.GetAsync<Product>(id, x => x.Index(indexName));
+            if (!result.IsValid)
+            {
+                return null;
+            }
+            result.Source.Id = result.Id;
+            return result.Source;
+        }
+        public async Task<bool> UpdateAsync(ProductUpdateDto productUpdateDto)
+        {
+            var response = await _client.UpdateAsync<Product, ProductUpdateDto>(productUpdateDto.Id, x =>
+            x.Index(indexName).Doc(productUpdateDto));
+            return response.IsValid;
+        }
+
+        public async Task<bool> DeleteAsync(string id)
+        {
+            var res = await _client.DeleteAsync<Product>(id, x => x.Index(indexName));
+            return res.IsValid;
+        }
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using ElastichSearch.API.DTOs;
+using ElastichSearch.API.Models;
 using ElastichSearch.API.Repository;
 using System.Collections.Immutable;
 using System.Net;
@@ -36,13 +37,45 @@ public class ProductService
         {
             if (x.Feature is null)
             {
-                 productListDto.Add(new ProductDto(x.Id, x.Name, x.Price, x.Stock, null));
+                productListDto.Add(new ProductDto(x.Id, x.Name, x.Price, x.Stock, null));
             }
             else
             {
-                productListDto.Add(new ProductDto(x.Id, x.Name, x.Price, x.Stock, new ProductFeatureDto(x.Feature.Width, x.Feature!.Height, x.Feature!.Color)));
+                productListDto.Add(new ProductDto(x.Id, x.Name, x.Price, x.Stock, new ProductFeatureDto(x.Feature.Width, x.Feature!.Height, x.Feature!.Color.ToString())));
             }
         }
         return ResponseDto<List<ProductDto>>.Success(productListDto, HttpStatusCode.OK);
+    }
+
+    public async Task<ResponseDto<ProductDto>> GetByIdAsync(string id)
+    {
+        var product = await _repository.GetByIdAsync(id);
+        if (product == null)
+        {
+            return ResponseDto<ProductDto>.Fail(new List<string>() { "Ürün bulunamadı" }, HttpStatusCode.NotFound);
+        }
+
+        return ResponseDto<ProductDto>.Success(product.CreateDto(), HttpStatusCode.OK);
+    }
+
+    public async Task<ResponseDto<bool>> UpdateAsync(ProductUpdateDto productDto)
+    {
+        var res = await _repository.UpdateAsync(productDto);
+
+        if (res == false)
+        {
+            return ResponseDto<bool>.Fail(new List<string>() { "Güncellenemedi" }, HttpStatusCode.InternalServerError);
+        }
+        return ResponseDto<bool>.Success(true, HttpStatusCode.NoContent);
+    }
+
+    public async Task<ResponseDto<bool>> DeleteAsync(string id)
+    {
+        var res = await _repository.DeleteAsync(id);
+        if (res == false)
+        {
+            return ResponseDto<bool>.Fail(new List<string>() { "Silinemedi" }, HttpStatusCode.InternalServerError);
+        }
+        return ResponseDto<bool>.Success(true, HttpStatusCode.NoContent);
     }
 }
