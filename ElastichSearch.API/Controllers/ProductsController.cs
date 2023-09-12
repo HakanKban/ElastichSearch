@@ -5,9 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ElastichSearch.API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ProductsController : ControllerBase
+  
+    public class ProductsController : BaseController
     {
         private readonly ProductService _productService;
 
@@ -19,7 +18,12 @@ namespace ElastichSearch.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Save(ProductCreateDto productCreateDto)
         {
-            return Ok(await _productService.SaveAsync(productCreateDto));
+            return CreateActionResult(await _productService.SaveAsync(productCreateDto));
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            return CreateActionResult(await _productService.GetAllAsync());
         }
     }
 }
