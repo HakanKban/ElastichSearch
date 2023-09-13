@@ -1,12 +1,10 @@
 ﻿using ElastichSearch.API.DTOs;
 using ElastichSearch.API.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Nest;
 
 namespace ElastichSearch.API.Controllers
 {
-  
+
     public class ProductsController : BaseController
     {
         private readonly ProductService _productService;

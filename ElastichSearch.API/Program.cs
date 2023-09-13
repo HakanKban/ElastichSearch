@@ -1,8 +1,6 @@
 using ElastichSearch.API.Extensions;
 using ElastichSearch.API.Repository;
 using ElastichSearch.API.Services;
-using Elasticsearch.Net;
-using Nest;
 
 var builder = WebApplication.CreateBuilder(args);
 

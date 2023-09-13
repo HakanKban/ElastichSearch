@@ -1,15 +1,15 @@
-﻿using ElastichSearch.API.DTOs;
+﻿using Elastic.Clients.Elasticsearch;
+using ElastichSearch.API.DTOs;
 using ElastichSearch.API.Models;
-using Nest;
 using System.Collections.Immutable;
 
 namespace ElastichSearch.API.Repository
 {
     public class ProductRepository
     {
-        private readonly ElasticClient _client;
+        private readonly ElasticsearchClient _client;
         private const string indexName = "products";
-        public ProductRepository(ElasticClient client)
+        public ProductRepository(ElasticsearchClient client)
         {
             _client = client;
         }
@@ -20,7 +20,7 @@ namespace ElastichSearch.API.Repository
 
             var response = await _client.IndexAsync(product, x => x.Index(indexName).Id(Guid.NewGuid().ToString()));
             //Index kaydeder. Tablo ismi products olur.
-            if(!response.IsValid) return null;
+            if(!response.IsSuccess()) return null;
 
             product.Id = response.Id;
 
@@ -36,7 +36,7 @@ namespace ElastichSearch.API.Repository
         public async Task<Product?> GetByIdAsync(string id)
         {
             var result = await _client.GetAsync<Product>(id, x => x.Index(indexName));
-            if (!result.IsValid)
+            if (!result.IsSuccess())
             {
                 return null;
             }
@@ -45,9 +45,8 @@ namespace ElastichSearch.API.Repository
         }
         public async Task<bool> UpdateAsync(ProductUpdateDto productUpdateDto)
         {
-            var response = await _client.UpdateAsync<Product, ProductUpdateDto>(productUpdateDto.Id, x =>
-            x.Index(indexName).Doc(productUpdateDto));
-            return response.IsValid;
+            var response = await _client.UpdateAsync<Product, ProductUpdateDto>(indexName,productUpdateDto.Id,x => x.Doc(productUpdateDto));
+            return response.IsSuccess();
         }
 
         public async Task<DeleteResponse> DeleteAsync(string id)
