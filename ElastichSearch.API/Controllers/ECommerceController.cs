@@ -21,6 +21,20 @@ namespace ElastichSearch.API.Controllers
             
           return Ok (await _repo.TermQuery(firstName));
         
+        }    
+        [HttpPost]
+        public async Task<IActionResult> TermsQuery(List<string> customerFirsNameList) 
+        {
+            
+          return Ok (await _repo.TermsQuery(customerFirsNameList));
+        
+        }       
+        [HttpGet]
+        public async Task<IActionResult> PerfixQuery(string customerFull) 
+        {
+            
+          return Ok (await _repo.PrefixQuery(customerFull));
+        
         }
 
     }
