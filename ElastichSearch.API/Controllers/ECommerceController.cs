@@ -41,7 +41,19 @@ namespace ElastichSearch.API.Controllers
         {
             
           return Ok (await _repo.RangeQuery(fromPrice,toPrice));
+        }     
+        [HttpGet]
+        public async Task<IActionResult> MatchAllQuery() 
+        {
+            
+          return Ok (await _repo.MatchAllQuery());
+        }      
         
+        [HttpGet]
+        public async Task<IActionResult> PaginationQuery(int page, int pageSize) 
+        {
+            
+          return Ok (await _repo.PaginationQuery(page,pageSize));
         }
 
     }

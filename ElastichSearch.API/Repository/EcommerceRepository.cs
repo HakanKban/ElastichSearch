@@ -66,6 +66,19 @@ namespace ElastichSearch.API.Repository
 
             return result.Documents.ToList();
         }
-
+        public async Task<List<ECommerce>> MatchAllQuery()
+        {
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName).Size(10).Query(q => q.MatchAll()));
+            return result.Documents.ToList();
+        } 
+        
+        public async Task<List<ECommerce>> PaginationQuery(int page, int pageSize)
+        {
+            var pageFrom  = (page - 1) * pageSize; 
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName)
+            .Size(10).From(pageFrom)
+            .Query(q => q.MatchAll()));
+            return result.Documents.ToList();
+        }
     }
 }
