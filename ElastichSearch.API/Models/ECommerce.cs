@@ -13,6 +13,9 @@ namespace ElastichSearch.API.Models
       
          [JsonPropertyName("customer_full_name")]
         public string CustomerFullName { get; set; } = null!;
+
+        [JsonPropertyName("taxful_total_price")]
+        public double TaxfulTotalPrice { get; set; }
         [JsonPropertyName("category")]
         public string[] Category { get; set; } = null!;
         [JsonPropertyName("order_id")]

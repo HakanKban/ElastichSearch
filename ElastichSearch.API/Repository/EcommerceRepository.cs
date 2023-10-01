@@ -54,10 +54,15 @@ namespace ElastichSearch.API.Repository
             .Query(q => q.Prefix(t => t.Field(x => x.CustomerFullName.Suffix("keyword")).Value(customerFullName))));
 
             return result.Documents.ToList();
-        }  public async Task<List<ECommerce>> RangeQuery(decimal fromPrice, decimal toPrice)
+        }  
+        public async Task<List<ECommerce>> RangeQuery(double fromPrice, double toPrice)
         {
             var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName)
-            .Query(q => q.Prefix(t => t.Field(x => x.CustomerFullName.Suffix("keyword")).Value(customerFullName))));
+            .Query(q => q
+             .Range(r => r
+              .NumberRange(nr => nr
+               .Field(f => f.TaxfulTotalPrice)
+                .Gte(fromPrice).Lte(toPrice)))));
 
             return result.Documents.ToList();
         }

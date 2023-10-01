@@ -35,6 +35,13 @@ namespace ElastichSearch.API.Controllers
             
           return Ok (await _repo.PrefixQuery(customerFull));
         
+        }        
+        [HttpGet]
+        public async Task<IActionResult> RangeQuery(double fromPrice, double toPrice) 
+        {
+            
+          return Ok (await _repo.RangeQuery(fromPrice,toPrice));
+        
         }
 
     }
