@@ -71,13 +71,39 @@ namespace ElastichSearch.API.Repository
             var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName).Size(10).Query(q => q.MatchAll()));
             return result.Documents.ToList();
         } 
-        
         public async Task<List<ECommerce>> PaginationQuery(int page, int pageSize)
         {
             var pageFrom  = (page - 1) * pageSize; 
             var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName)
             .Size(10).From(pageFrom)
             .Query(q => q.MatchAll()));
+            return result.Documents.ToList();
+        } 
+        public async Task<List<ECommerce>> WildCardQuery(string customerFullName)
+        {
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName)
+            .Query(q => q.Wildcard(w => w.Field(f => f.CustomerFullName.Suffix("keyword")).Wildcard(customerFullName))));
+            return result.Documents.ToList();
+        }  
+        public async Task<List<ECommerce>>  FuzzyQuery(string customerName)
+        {
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName)
+            .Query(q => q.
+              Fuzzy(w => w.
+                Field(f => f.CustomerFirstName.
+                 Suffix("keyword")).Value(customerName).
+                   Fuzziness(new Fuzziness(1)))).Sort(sort=> sort.Field(f => f.TaxfulTotalPrice, new FieldSort() { Order = SortOrder.Desc})));
+            return result.Documents.ToList();
+        } 
+
+        // Or layarak sorgular. Score değeri var. Hakan ya da Kaban.
+        public async Task<List<ECommerce>>  MatchQueryFullText(string categoryName)
+        {
+            var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName)
+            .Query(q => q.
+              Match(w => w.
+                Field(f => f.Category).Query(categoryName);
+                
             return result.Documents.ToList();
         }
     }

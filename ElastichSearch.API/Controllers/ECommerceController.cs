@@ -55,6 +55,25 @@ namespace ElastichSearch.API.Controllers
             
           return Ok (await _repo.PaginationQuery(page,pageSize));
         }
+              
+        [HttpGet]
+        public async Task<IActionResult> WildCardQuery(string customerFullName) 
+        {
+            
+          return Ok (await _repo.WildCardQuery(customerFullName));
+        }   
+        [HttpGet]
+        public async Task<IActionResult> FuzzyQuery(string customerName) 
+        {
+            
+          return Ok (await _repo.FuzzyQuery(customerName));
+        }       
+        [HttpGet]
+        public async Task<IActionResult> MatchQueryFullTextQuery(string category) 
+        {
+            
+          return Ok (await _repo.MatchQueryFullText(category));
+        }
 
     }
 }
