@@ -97,14 +97,33 @@ namespace ElastichSearch.API.Repository
         } 
 
         // Or layarak sorgular. Score değeri var. Hakan ya da Kaban.
-        public async Task<List<ECommerce>>  MatchQueryFullText(string categoryName)
+        public async Task<List<ECommerce>>  MatchQueryFullText(string customerFullName)
         {
             var result = await _client.SearchAsync<ECommerce>(s => s.Index(indexName)
             .Query(q => q.
               Match(w => w.
-                Field(f => f.Category).Query(categoryName);
+                Field(f => f.Category).Query(customerFullName))));
                 
             return result.Documents.ToList();
         }
+
+
+        public async Task<List<ECommerce>> CompoundQuery(string cityName, double taxFullTotalPrice, string categoryName , string menuFActure)
+        {
+            var result = await _client.SearchAsync<ECommerce>(
+                s => s.Index(indexName)
+                .Size(1000)
+                .Query(q => q.
+                Bool(b => b.
+                Must(m => m.
+                Term(t => t.
+                Field("geoip.city_name").Value(cityName)))
+                .MustNot(mn => mn.Range(r => r.NumberRange(nr => nr.Field(f => f.TaxfulTotalPrice).Lte(taxFullTotalPrice))))
+                .Should(s => s.Term(t => t.Field(f => f.Category.Suffix("keywprd")).Value(categoryName)))
+                .Filter(f => f.Term(t => t.Field("menufacturer.ketword").Value(menuFActure))))));
+            return result.Documents.ToList();
+
+        }
+
     }
 }
