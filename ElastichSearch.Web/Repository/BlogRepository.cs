@@ -1,4 +1,5 @@
 ﻿using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.Core.Search;
 using ElastichSearch.Web.Models;
 
 namespace ElastichSearch.Web.Repository
@@ -26,6 +27,22 @@ namespace ElastichSearch.Web.Repository
             blog.Id = response.Id;
 
             return blog;
+        }
+
+        public async Task<List<Blog>> SearcAsync(string searcText) 
+        {
+            var result = await _elasticsearchClient.SearchAsync<Blog>(s => s.Index(indexName)
+            .Size(1000).Query(q => q
+               .Bool(b => b
+                 .Should(//Querileri or ile ayırdık virgül sayesinde. Yoksa and olarak algılardo
+                   s => s.Match(f => f.Field(m => m.Content).Query(searcText)),
+                   s => s.MatchBoolPrefix(p => p.Field(f => f.Title).Query(searcText))))));
+
+            foreach (var item in result.Hits)
+            {
+               item.Source.Id = item.Id;
+            }
+          return result.Documents.ToList();
         }
 
 

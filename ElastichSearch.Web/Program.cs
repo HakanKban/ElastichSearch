@@ -1,11 +1,14 @@
 using ElastichSearch.Web.Extensions;
+using ElastichSearch.Web.Repository;
+using ElastichSearch.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddElasctic(builder.Configuration);
-
+builder.Services.AddScoped<BlogService>();
+builder.Services.AddScoped<BlogRepository>();
 
 var app = builder.Build();
 
