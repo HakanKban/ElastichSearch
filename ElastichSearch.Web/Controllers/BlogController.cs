@@ -13,9 +13,9 @@ namespace ElastichSearch.Web.Controllers
         {
             _blogService = blogService;
         }
-        public IActionResult Search()
+        public async Task<IActionResult> Search()
         {
-            return View(new List<Blog>());
+            return View(await _blogService.SearchAsync(string.Empty));
         }
 
         public IActionResult Save()
@@ -38,6 +38,7 @@ namespace ElastichSearch.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Search(string searchText)
         {
+            ViewBag.searchText = searchText;
             var blogList = await _blogService.SearchAsync(searchText);
             return View(blogList);
         }
