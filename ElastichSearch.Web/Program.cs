@@ -8,7 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddElasctic(builder.Configuration);
 builder.Services.AddScoped<BlogService>();
+builder.Services.AddScoped<ECommerceService>();
 builder.Services.AddScoped<BlogRepository>();
+builder.Services.AddScoped<ECommerceRepository>();
 
 var app = builder.Build();
 

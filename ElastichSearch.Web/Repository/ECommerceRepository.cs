@@ -20,6 +20,12 @@ namespace ElastichSearch.Web.Repository
         public async Task<(List<ECommerce> list , long count)> SearhAsync(EcommerceSearchViewModel viewModel, int page, int pageSize)
         {
             List<Action<QueryDescriptor<ECommerce>>> listQuery = new();
+
+            if (viewModel is null)
+            {
+                listQuery.Add(x => x.MatchAll());
+                return await CalculatedResult(page, pageSize, listQuery);
+            }
             if(!string.IsNullOrEmpty(viewModel.Category)) 
             {
                 //Action<QueryDescriptor<ECommerce>> matchcontext = (q) => q.Match(f => f.Field(m => m.Category).Query(viewModel.Category));
@@ -49,17 +55,36 @@ namespace ElastichSearch.Web.Repository
             {
                 listQuery.Add((q) => q.Term(f => f.Field(m => m.Gender).Value(viewModel.Gender)));
             }
+
+            if (!listQuery.Any())
+            {
+                listQuery.Add(x => x.MatchAll());
+            }
+
+            return await CalculatedResult(page, pageSize, listQuery);
+
+
+
+        }
+
+        private async Task<(List<ECommerce> list, long count )> CalculatedResult(int page, int pageSize, List<Action<QueryDescriptor<ECommerce>>> listQuery) 
+        {
             var pageFrom = (page - 1) * pageSize;
             var result = await _elasticsearchClient.SearchAsync<ECommerce>(s => s.Index(indexName)
            .Size(pageSize).From(pageFrom).Query(q => q
               .Bool(b => b
                 .Must(listQuery.ToArray()))));
 
-            foreach (var item in result.Hits)
-            {
-                item.Source.Id = item.Id;
-            }
+            //foreach (var item in result.Hits)
+            //{
+            //    item.Source.Id = item.Id;
+            //}
             return (result.Documents.ToList(), result.Total);
+
         }
+
+
+
+
     }
 }
